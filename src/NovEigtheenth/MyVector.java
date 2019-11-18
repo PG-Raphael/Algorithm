@@ -3,14 +3,32 @@ package NovEigtheenth;
 import java.util.*;
 import java.util.function.UnaryOperator;
 
-import static java.util.Comparator.naturalOrder;
-
 /**
  * Created by seungmin.yun on 11/18/2019
  * Student ID: 010820132
  */
 
 public class MyVector<E> implements List<E> {
+    public static void main(String[] args) {
+        MyVector myVector = new MyVector();
+        myVector.add(8);
+        myVector.add(7);
+        myVector.add(6);
+        myVector.add(2);
+        myVector.add(4);
+        myVector.add(3);
+        myVector.add(2);
+        myVector.sort(null);
+        System.out.println(myVector.toString());
+        myVector.add(3, 5);
+        System.out.println(myVector.toString());
+        System.out.println(myVector.lastIndexOf(4));
+        System.out.println(myVector.subList(3,5));
+        System.out.println(myVector.toString());
+        myVector.removeAll(Arrays.asList(2,3,4,5));
+        System.out.println(myVector.toString());
+
+    }
     int capacity = 0;
     Object[] data = null;
     int size = 0;
@@ -43,6 +61,11 @@ public class MyVector<E> implements List<E> {
     }
 
     @Override
+    public String toString() {
+
+        return Arrays.toString(data);
+    }
+    @Override
     public boolean contains(Object o) {
         for (int i = 0; i < size; i++) {
             if (o.equals(data[i])) {
@@ -68,19 +91,19 @@ public class MyVector<E> implements List<E> {
         for (int i = 0; i < size; i++) {
             if (o.equals(data[i])) {
                 remove(i);
+                return true;
             }
         }
-
-        return true;
+        return false;
     }
 
     // Insertion sort
     @Override
     public void sort(Comparator<? super E> c) {
         Comparator spr = Comparator.naturalOrder();
-        for (int i = 0; i < size; i++) {
+        for (int i = 1; i < size; i++) {
             int minIndex = i;
-           while(spr.compare(data[i], data[minIndex - 1]) > 0 && minIndex > 0) {
+           while(minIndex > 0 && spr.compare(data[minIndex], data[minIndex-1]) < 0) {
                swap(minIndex, minIndex-1, data);
                minIndex--;
            }
@@ -95,8 +118,7 @@ public class MyVector<E> implements List<E> {
 
     void ensureCapacity(int minCapacity) {
         if (minCapacity - data.length > 0)
-            throw new IllegalArgumentException("Invalid " + minCapacity);
-        setCapacity(minCapacity);
+            setCapacity(minCapacity * 2);
     }
 
     void setCapacity(int capacity) {
@@ -152,7 +174,11 @@ public class MyVector<E> implements List<E> {
         if (index < 0 || index >=size)
             throw new IllegalArgumentException("Invalid "+ index);
 
+        if( index != size-1) {
+            System.arraycopy(data, index, data, index+1, size-index);
+        }
         data[index] = element;
+        size++;
     }
 
 //    public Object remove(int index) {
@@ -167,28 +193,37 @@ public class MyVector<E> implements List<E> {
                 return i;
             }
         }
-        return 0;
+        return -1;
     }
 
     @Override
     public int lastIndexOf(Object o) {
-        return size-1;
+        int index = 0;
+        for( int i =0;i <size; i++) {
+            if(o.equals(data[i])) {
+                index = i;
+            }
+        }
+        return index;
     }
 
     @Override
     public List subList(int fromIndex, int toIndex) {
-        List tmp = new LinkedList();
-        System.arraycopy(data, fromIndex, tmp, fromIndex, toIndex);
-        return tmp;
+        Object[] tmp = new Object[toIndex-fromIndex+1];
+        System.arraycopy(data, fromIndex, tmp, 0, toIndex-fromIndex+1);
+        return Arrays.asList(tmp);
     }
 
     @Override
     public boolean removeAll(Collection c) {
-        for (Object d : c) {
-            d = null;
+        if(!c.isEmpty()) {
+            for (Object d : c) {
+                remove(d);
+            }
+            size = 0;
+            return true;
         }
-        size = 0;
-        return true;
+        return false;
     }
 
     @Override
