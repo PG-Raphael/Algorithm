@@ -98,5 +98,6 @@ public class QueueTest<E> implements Queue<E> {
 
         for (Integer e: queueTest)
             System.out.print(e + " ");
+
     }
 }
